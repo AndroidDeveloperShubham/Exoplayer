@@ -1,65 +1,58 @@
-package com.apps.exoplayer;
+package com.apps.exoplayer
 
-import android.content.Context;
-import android.graphics.Canvas;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.widget.SeekBar;
+import android.content.Context
+import android.graphics.Canvas
+import android.util.AttributeSet
+import android.view.MotionEvent
+import androidx.appcompat.widget.AppCompatSeekBar
 
-public class VerticalSeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
-
-    public VerticalSeekBar(Context context) {
-        super(context);
+class VerticalSeekBar : AppCompatSeekBar {
+    constructor(context: Context?) : super(context!!) {}
+    constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(
+        context!!, attrs, defStyle
+    ) {
     }
 
-    public VerticalSeekBar(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    constructor(context: Context?, attrs: AttributeSet?) : super(
+        context!!, attrs
+    ) {
     }
 
-    public VerticalSeekBar(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(h, w, oldh, oldw)
     }
 
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(h, w, oldh, oldw);
-    }
-
-    @Override
-    public synchronized void setProgress(int progress)  // it is necessary for calling setProgress on click of a button
+    @Synchronized
+    override fun setProgress(progress: Int) // it is necessary for calling setProgress on click of a button
     {
-        super.setProgress(progress);
-        onSizeChanged(getWidth(), getHeight(), 0, 0);
-    }
-    @Override
-    protected synchronized void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(heightMeasureSpec, widthMeasureSpec);
-        setMeasuredDimension(getMeasuredHeight(), getMeasuredWidth());
+        super.setProgress(progress)
+        onSizeChanged(width, height, 0, 0)
     }
 
-    protected void onDraw(Canvas c) {
-        c.rotate(-90);
-        c.translate(-getHeight(), 0);
-
-        super.onDraw(c);
+    @Synchronized
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(heightMeasureSpec, widthMeasureSpec)
+        setMeasuredDimension(measuredHeight, measuredWidth)
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (!isEnabled()) {
-            return false;
+    override fun onDraw(c: Canvas) {
+        c.rotate(-90f)
+        c.translate(-height.toFloat(), 0f)
+        super.onDraw(c)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isEnabled) {
+            return false
         }
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
-            case MotionEvent.ACTION_UP:
-                setProgress(getMax() - (int) (getMax() * event.getY() / getHeight()));
-                onSizeChanged(getWidth(), getHeight(), 0, 0);
-                break;
-
-            case MotionEvent.ACTION_CANCEL:
-                break;
+        when (event.action) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP -> {
+                progress = max - (max * event.y / height).toInt()
+                onSizeChanged(width, height, 0, 0)
+            }
+            MotionEvent.ACTION_CANCEL -> {
+            }
         }
-        return true;
+        return true
     }
 }
